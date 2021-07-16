@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=News Feed
+Comment=A widget to take over the world!
+Type=Service
+Icon=face-cool
+
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+
+X-KDE-PluginInfo-Author=Andrew Mellor
+X-KDE-PluginInfo-Email=andrew@quasars.com
+X-KDE-PluginInfo-Version=1
+X-KDE-PluginInfo-Category=Windows and Tasks
+X-KDE-PluginInfo-Name=com.github.vac1911.plasma-rss
