@@ -24,13 +24,7 @@ Rectangle {
         if (feedModel.status == XmlListModel.Ready) {
             list.positionViewAtBeginning()
             if (!xmlContentReloader.running) xmlContentReloader.start()
-            // imgData.runCommand('touch /home/andrew/hello')
-            imgData.setLink('www.google.com');
         }
-    }
-
-    ImageData {
-        id: imgData
     }
 
     Timer {
@@ -82,13 +76,20 @@ Rectangle {
 
     ListView {
         id: list
-        spacing: -1
+
+        spacing: 8
         anchors.left: window.left
         anchors.right: window.right
         anchors.top: topbar.bottom
         anchors.bottom: window.bottom
         anchors.leftMargin: 16
-        anchors.rightMargin: 16
+        anchors.rightMargin: 0
+
+        clip: true;
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        ScrollBar.vertical: ScrollBar {}
+
         model: feedModel
         delegate: NewsDelegate {}
     }
