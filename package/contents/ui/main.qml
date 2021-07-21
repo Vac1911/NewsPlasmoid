@@ -80,7 +80,7 @@ Rectangle {
     ListView {
         id: list
 
-        spacing: 8
+        spacing: -1
         anchors.left: window.left
         anchors.right: window.right
         anchors.top: topbar.bottom
