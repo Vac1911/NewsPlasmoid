@@ -6,6 +6,8 @@ import org.kde.plasma.components 2.0 as PlasmaComponent
 
 Rectangle {
     id: imgDataRoot
+	color: 'transparent'
+	property string size
     property string link
     property string imgSrc
 
@@ -19,13 +21,40 @@ Rectangle {
     }
 
 	function setImg(src) {
-        this.imgSrc = src.toString()
-		imgOut.source = this.imgSrc;
+        this.imgSrc = src
+		imgOut.source = this.imgSrc
     }
 
-    function setLink(link) {
+	function normalizeSource(src, location) {
+		var url = src
+		var pos = url.search('//')
+
+		// If absolute url
+		if(pos !== -1) {
+			 url = url.slice(pos + 2)
+		}
+		// If relative url
+		else if (url.startsWith('/')) {
+			url = imgDataRoot.getHost(location) + src
+		}
+
+		return 'https://' + url
+	}
+
+	function getHost(location) {
+		var start = location.search('//')
+		if(start !== -1) location = location.slice(start + 2)
+
+		var end = location.search('/')
+		if(end !== -1) location = location.slice(0, end)
+
+		return location
+	}
+
+    function setLink(link, size) {
         this.link = link
-        this.runCommand('curl ' + link)
+		this.size = size
+        this.runCommand('curl ' + link + " -L -s -w '\n[%{url_effective}]'")
     }
 
     PlasmaCore.DataSource {
@@ -46,8 +75,33 @@ Rectangle {
 		signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
 
         onExited: {
-			var metaTag = stdout.match(/<meta [^>]+>/g).find(metaTag => metaTag.includes('og:image'))
-			imgDataRoot.setImg(metaTag.match(/content="(.*)"/g)[0].slice(9, -1))
+			var source = ''
+			var location = stdout.match(/\n\[(.)+\]$/)[0].trim().slice(1, -1)
+			var host = imgDataRoot.getHost(location)
+
+			if(imgDataRoot.size == 'large') {
+				var metaTag = stdout.match(/<meta [^>]+>/g).find(metaTag => metaTag.includes('og:image'))
+				if(metaTag) source = metaTag.match(/content="(.*)"/g)[0].slice(9, -1)
+
+				source = imgDataRoot.normalizeSource(source, location)
+			}
+
+			if(!source && window.iconCache[host]) {
+				source = window.iconCache[host]
+			}
+
+			if(!source) {
+				var linkTags = stdout.match(/<link [^>]+>/g)
+				var icon = linkTags.find(metaTag => metaTag.includes('shortcut icon'))
+				if(!icon) icon = linkTags.find(metaTag => metaTag.includes('icon'))
+
+				source = icon.match(/href="(.*)"/g)[0].slice(6, -1)
+				source = imgDataRoot.normalizeSource(source, location)
+
+				window.iconCache[host] = source
+			}
+
+			imgDataRoot.setImg(source)
         }
 	}
     function runCommand(cmd) {

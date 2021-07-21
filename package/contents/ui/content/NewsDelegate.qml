@@ -6,26 +6,33 @@ import "../luxon.js" as DateUtil
 
 Rectangle {
     id: delegate
+    property string size: 'icon'
     width: delegate.ListView.view.width - 30
-    height: 96
+    height: size == 'icon' ? 48 : 96
     color: PlasmaCore.ColorScope.backgroundColor
 
     border.color: "#30363d"
     border.width: 1
 
     Component.onCompleted: {
-        imgData.setLink(link);
+        imgData.setLink(link, size);
     }
     RowLayout {
         id: layout
         anchors.fill: parent
         height: parent.height
-        spacing: 16
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
+        spacing: 8
 
-        ImageData {
-            id: imgData
-            width: parent.height * 2
-            height: parent.height
+        Item {
+            Layout.preferredWidth: imgData.width
+            Layout.preferredHeight: imgData.height
+            ImageData {
+                id: imgData
+                width: delegate.size == 'icon' ? 24 : parent.height * 2
+                height: delegate.size == 'icon' ? 24 : parent.height
+            }
         }
 
         PlasmaComponents.Label {
@@ -41,7 +48,7 @@ Rectangle {
 
         PlasmaComponents.Label {
             id: timeLabel
-            Layout.minimumWidth: 100
+            Layout.preferredWidth: 100
             font.pointSize: 8
             font.underline: false
             text: '---'

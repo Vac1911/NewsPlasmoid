@@ -11,13 +11,15 @@ import "./content"
 
 Rectangle {
     id: window
+    property var iconCache: []
     width: 800
     height: 400
 
     color: PlasmaCore.ColorScope.backgroundColor
 
     /*property string currentFeed: "www.mlb.com/feeds/news/rss.xml"*/
-    property string currentFeed: "blogs.fangraphs.com/feed/"
+    /*property string currentFeed: "blogs.fangraphs.com/feed/"*/
+    property string currentFeed: "feeds.feedburner.com/defense-news/home"
     property bool loading: feedModel.status === XmlListModel.Loading
 
     onLoadingChanged: {
@@ -46,6 +48,7 @@ Rectangle {
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "pubDate"; query: "pubDate/string()" }
         XmlRole { name: "link"; query: "link/string()" }
+        /*XmlRole { name: "media"; query: "media:content/string()" }*/
     }
 
     Item {
